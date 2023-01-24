@@ -1,7 +1,7 @@
 const fs = require("fs")
 
 /**
- * Helper script to convert Notebook output to LaTeX tables.
+ * Helper script to convert Jupyter notebook output to LaTeX tables.
  * Run with Node.js.
  */
 
