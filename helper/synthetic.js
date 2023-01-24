@@ -1,16 +1,34 @@
 const fs = require("fs")
 
+/**
+ * Helper script to convert Notebook output to LaTeX tables.
+ * Run with Node.js.
+ */
+
 const tableStructure = {
-  abrupt: {},
-  gradual500: {},
-  gradual1000: {},
-  gradual5000: {},
-  gradual10000: {},
-  gradual20000: {}
+  abrupt: {
+    caption: "Abrupt"
+  },
+  gradual500: {
+    caption: "500 rows wide gradual"
+  },
+  gradual1000: {
+    caption: "1000 rows wide gradual"
+  },
+  gradual5000: {
+    caption: "5000 rows wide gradual"
+  },
+  gradual10000: {
+    caption: "10000 rows wide gradual"
+  },
+  gradual20000: {
+    caption: "20000 rows wide gradual"
+  },
 }
 
-function parseSEA() {
-  const file = fs.readFileSync("./data/sea.txt", "utf-8")
+// Notebook result parsing
+function parseFile(filename) {
+  const file = fs.readFileSync(filename, "utf-8")
 
   const lines = file.split("\n")
   
@@ -35,7 +53,7 @@ function parseSEA() {
     if (resultLines[i].filename.includes("gradual")) {
       driftType = "gradual"
       const filenameEnding = resultLines[i].filename.split("noise_balanced")[1]
-      console.log(filenameEnding);
+      // console.log(filenameEnding);
       if (filenameEnding.startsWith("_05.")) {
         driftType += "500"
       } else if (filenameEnding.startsWith("_1.")) {
@@ -48,7 +66,7 @@ function parseSEA() {
         driftType += "20000"
       }
     }
-    console.log(driftType);
+    // console.log(driftType);
     let dataset = "sea"
     if (resultLines[i].filename.includes("agraw1")) {
       dataset = "agraw1"
@@ -60,13 +78,13 @@ function parseSEA() {
     let encoder = resultLines[i].filename.split("encoder: ")[1]
     switch (encoder) {
       case "ordinal":
-      case "None":
         encoder = "oe"
         break;
       case "onehot":
         encoder = "ohe"
         break;
       case "target":
+      case "None":
         encoder = "te"
         break;
       default:
@@ -74,41 +92,119 @@ function parseSEA() {
     }
 
     let scaler = ")"
-    if (i % 2 != 0) {
-      scaler = ", s)"
+    if (i % 2 == 0) {
+      scaler = ", u)"
     }
 
-    // Construct the LaTeX lines
-    for (const detectorResult of detectorResults) {
-      let line = ""
-      const detector = detectorResult.split(":")[0].trim()
-      if (detector === "PCA_ref") {
-        line += "PCA (fixed, "
-      } else if (detector === "PCA_orig") {
-        line += "PCA (cont., "
-      } else if (detector === "Stat_ref") {
-        line += "Wilc. (fixed, "
-      } else if (detector === "Stat_orig") {
-        line += "Wilc. (cont., "
-      } else if (detector === "SCD_unidir") {
-        line += "SCD (unidir., "
-      }
-      line += encoder
-      line += scaler
+    
 
-      // Add to the structure
-      if (!tableStructure[driftType][line]) {
-        tableStructure[driftType][line] = {
-          sea: "",
-          agraw1: "",
-          agraw2: ""
-        }
+    // Construct the row keys
+    for (const detectorResult of detectorResults) {
+
+      let detector = detectorResult.split(":")[0].trim()
+      if (detector === "PCA_ref") {
+        detector = "PCA (fixed, "
+      } else if (detector === "PCA_orig") {
+        detector = "PCA (cont., "
+      } else if (detector === "Stat_ref") {
+        detector = "Wilc. (fixed, "
+      } else if (detector === "Stat_orig") {
+        detector = "Wilc. (cont., "
+      } else if (detector === "SCD_unidir") {
+        detector = "SCD (unidir., "
       }
-      tableStructure[driftType][line][dataset] = detectorResult.split("] ")[1]
+      
+      if (filter(detector, encoder, scaler, driftType)) {
+
+        let line = ""
+        
+        line += detector
+        line += encoder
+        line += scaler
+
+        // Add to the structure
+        if (!tableStructure[driftType][line]) {
+          tableStructure[driftType][line] = {
+            sea: "",
+            agraw1: "",
+            agraw2: ""
+          }
+        }
+        tableStructure[driftType][line][dataset] = detectorResult.split("] ")[1]
+      }
     }
   }
 }
 
-parseSEA()
+// Filter to leave out excess rows as specified
+function filter(detector, encoder, scaler, driftType) {
+  if (detector.includes("SCD") && encoder === "ohe") {
+    return false
+  }
+  if (driftType !== "abrupt") {
+    if (scaler.includes("u") && (!detector.includes("PCA") || encoder !== "ohe")) {
+      return false
+    }
+    if (detector.includes("Wilc.") && encoder === "ohe") {
+      return false
+    }
+    if (!detector.includes("Wilc.") && encoder === "oe") {
+      return false
+    }
+  }
+  return true
+}
 
-console.log(tableStructure);
+// Custom sorting of rows
+function sortFn(a, b) {
+  if (a.startsWith("SCD") && b.startsWith("Wilc")) {
+    return 1
+  }
+  if (a.startsWith("Wilc") && b.startsWith("SCD")) {
+    return -1
+  }
+  return a.localeCompare(b)
+}
+
+
+// Construct the LaTeX tables
+
+parseFile("./data/sea.txt")
+parseFile("./data/agraw1.txt")
+parseFile("./data/agraw2.txt")
+parseFile("./data/agraw_scd.txt")
+
+let output = ""
+
+Object.keys(tableStructure)
+  .forEach(driftType => {
+    output += "\n\n"
+    output +=
+`\\begin{table}
+    \\centering
+    \\begin{tabular}{|l|c|c|c|}
+        \\hline
+        Method & SEA & Agraw1 & Agraw2 \\\\
+        \\hline
+        \\hline`
+    let previousKey = ""
+    for (const key of Object.keys(tableStructure[driftType]).sort(sortFn)) {
+      if (key !== "caption") {
+        if (previousKey.substring(0, 8) !== key.substring(0, 8)) {
+          output += "\n        \\hline"
+        }
+        output += `\n        ${key} & ${tableStructure[driftType][key].sea || " "} & ${tableStructure[driftType][key].agraw1 || " "} & ${tableStructure[driftType][key].agraw2 || " "} \\\\`
+        output += "\n        \\hline"
+        previousKey = key
+      }
+    }
+    output += "\n"
+    output += 
+`    \\end{tabular}
+    \\caption{${tableStructure[driftType].caption} drift detection performance in synthetic datasets, measured in False Positive Rate and Latency ($FPR_s$, $L$).}
+    \\label{tab:results_synthetic_${driftType}}
+\\end{table}`
+  })
+
+console.log(output);
+fs.writeFileSync("output/tables_synthetic.tex", output)
