@@ -55,15 +55,14 @@ function parseFile(filename) {
         encoder = "te"
         break;
       case "None":
-        encoder = ""
-        break;
       default:
+        encoder = undefined
         break;
     }
 
-    let scaler = ")"
+    let scaler
     if (i % 2 == 0) {
-      scaler = ", u)"
+      scaler = "u"
     }
 
     // Construct the row keys
@@ -71,20 +70,27 @@ function parseFile(filename) {
 
       let detector = detectorResult.split(":")[0].trim()
       if (detector === "PCA_ref") {
-        detector = "PCA ("
+        detector = "PCA "
       } else if (detector === "Stat_ref") {
-        detector = "Wilc. ("
+        detector = "Wilc. "
       } else if (detector === "SCD_unidir") {
-        detector = "SCD ("
+        detector = "SCD "
       }
       
       if (filter(detector, encoder, scaler)) {
 
-        let line = ""
+        let line = detector
         
-        line += detector
-        line += encoder
-        line += scaler
+        if (encoder || scaler) {
+          const markings = []
+          if (encoder) {
+            markings.push(encoder)
+          }
+          if (scaler) {
+            markings.push(scaler)
+          }
+          line += `(${markings.join(", ")})`
+        }
 
         // Add to the structure
         if (!tableStructure[line]) {
@@ -127,6 +133,18 @@ function sortFn(a, b) {
     return 1
   }
   if (a.startsWith("Wilc") && b.startsWith("SCD")) {
+    return -1
+  }
+  if (a.startsWith("Wilc") && b.startsWith("PCA")) {
+    return 1
+  }
+  if (a.startsWith("PCA") && b.startsWith("Wilc")) {
+    return -1
+  }
+  if (!a.includes("(u)") && b.includes("(u)")) {
+    return 1
+  }
+  if (a.includes("(u)") && !b.includes("(u)")) {
     return -1
   }
   return a.localeCompare(b)
@@ -261,7 +279,7 @@ for (const key of Object.keys(tableStructure).sort(sortFn)) {
 output += "\n"
 output += 
 `    \\end{tabular}
-    \\caption{Drift detection performance on the real world dataset Airlines, measured in False Positive Rate and Accuracy ($FPR_{rw}$, $Acc$). Both SyncStream methods use a fixed reference, and SCD is run in only one direction.}
+    \\caption{Drift detection performance on the real world dataset Airlines, measured in False Positive Rate and Accuracy ($FPR_{rw}$, $Acc$). Both SyncStream methods use a fixed reference.}
     \\label{tab:results_real_world_airlines_elect2}
 \\end{table}`
 
