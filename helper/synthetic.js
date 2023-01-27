@@ -115,6 +115,8 @@ function parseFile(filename) {
         detector = "Wilc. (cont., "
       } else if (detector === "SCD_unidir") {
         detector = "SCD (unidir., "
+      } else if (detector === "SCD_bidir") {
+        detector = "SCD (bidir., "
       }
       
       if (filter(detector, encoder, scaler, driftType)) {
@@ -204,7 +206,7 @@ Object.keys(tableStructure)
     output += "\n"
     output += 
 `    \\end{tabular}
-    \\caption{${tableStructure[driftType].caption} drift detection performance in synthetic datasets, measured in False Positive Rate and Latency ($FPR_s$, $L$). Different encoders are marked as (oe, ohe, te), and experiments without the MinMaxScaler are marked with (u).}
+    \\caption{${tableStructure[driftType].caption} drift detection performance in synthetic datasets, measured in False Positive Rate and Latency ($FPR_s$, $L$).}
     \\label{tab:results_synthetic_${driftType}}
 \\end{table}`
   })

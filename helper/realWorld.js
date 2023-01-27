@@ -19,7 +19,7 @@ function parseFile(filename) {
     if (lines[i].trim().startsWith("real_world_data/")) {
       resultLines.push({
         filename: lines[i],
-        results: lines[i+1]
+        results: `${lines[i+1]} ${lines[i+2]}`
       })
     }
   }
@@ -70,11 +70,13 @@ function parseFile(filename) {
 
       let detector = detectorResult.split(":")[0].trim()
       if (detector === "PCA_ref") {
-        detector = "PCA "
+        detector = "PCA (fixed"
       } else if (detector === "Stat_ref") {
-        detector = "Wilc. "
+        detector = "Wilc. (fixed"
       } else if (detector === "SCD_unidir") {
-        detector = "SCD "
+        detector = "SCD (unidir."
+      } else if (detector === "SCD_bidir") {
+        detector = "SCD (bidir."
       }
       
       if (filter(detector, encoder, scaler)) {
@@ -82,14 +84,16 @@ function parseFile(filename) {
         let line = detector
         
         if (encoder || scaler) {
-          const markings = []
+          const markings = [""]
           if (encoder) {
             markings.push(encoder)
           }
           if (scaler) {
             markings.push(scaler)
           }
-          line += `(${markings.join(", ")})`
+          line += `${markings.join(", ")})`
+        } else {
+          line += ")"
         }
 
         // Add to the structure
@@ -143,10 +147,22 @@ function sortFn(a, b) {
   if (a.startsWith("PCA") && b.startsWith("Wilc")) {
     return -1
   }
-  if (!a.includes("(u)") && b.includes("(u)")) {
+  if (a.startsWith("SCD") && b.startsWith("PCA")) {
     return 1
   }
-  if (a.includes("(u)") && !b.includes("(u)")) {
+  if (a.startsWith("PCA") && b.startsWith("SCD")) {
+    return -1
+  }
+  if (a.includes("bidir") && b.includes("unidir")) {
+    return 1
+  }
+  if (a.includes("unidir") && b.includes("bidir")) {
+    return -1
+  }
+  if (!a.includes("u)") && b.includes("u)")) {
+    return 1
+  }
+  if (a.includes("u)") && !b.includes("u)")) {
     return -1
   }
   return a.localeCompare(b)
@@ -189,10 +205,6 @@ function getRealDriftsFromCsv(dataset) {
   return realDrifts
 }
 
-// getRealDriftsFromCsv("weather_monthly")
-// getRealDriftsFromCsv("weather_yearly")
-// process.exit(0)
-
 // Compute performance metrics here so detectors don't need to be run again if the reference changes.
 function computePerformance(dataset, detectedDrifts) {
   const reference = {
@@ -228,16 +240,16 @@ function computePerformance(dataset, detectedDrifts) {
 }
 
 function printLine(key, prevKey, datasets) {
-  let emptyLine = false
+  let emptyLine = true
   for (let i = 0; i < datasets.length; i++) {
-      dataset = datasets[i]
-    if (tableStructure[key][dataset].fpr === undefined || tableStructure[key][dataset].acc === undefined) {
-      emptyLine = true
+    dataset = datasets[i]
+    if (tableStructure[key][dataset].fpr !== undefined || tableStructure[key][dataset].acc !== undefined) {
+      emptyLine = false
     }
   }
   let line = ""
   if (!emptyLine) {
-    if (prevKey.substring(0, 3) !== key.substring(0, 3)) {
+    if (prevKey.substring(0, 4) !== key.substring(0, 4)) {
       line += "\n        \\hline"
     }
     line += `\n        ${key}`
@@ -264,6 +276,10 @@ parseFile("./data/airlines_syncstream.txt")
 parseFile("./data/elect2.txt")
 parseFile("./data/weather.txt")
 parseFile("./data/spam_syncstream.txt")
+parseFile("./data/weather_scd_bidir.txt")
+// console.log(tableStructure);
+// process.exit(0)
+
 
 let output = 
 `\\begin{table}
@@ -285,7 +301,7 @@ for (const key of Object.keys(tableStructure).sort(sortFn)) {
 output += "\n"
 output += 
 `    \\end{tabular}
-    \\caption{Drift detection performance on the real world dataset Airlines, measured in False Positive Rate and Accuracy ($FPR_{rw}$, $Acc$). Both SyncStream methods use a fixed reference.}
+    \\caption{Drift detection performance on the Airlines dataset, measured in False Positive Rate and Accuracy ($FPR_{rw}$, $Acc$).}
     \\label{tab:results_real_world_airlines_elect2}
 \\end{table}`
 
@@ -311,7 +327,7 @@ for (const key of Object.keys(tableStructure).sort(sortFn)) {
 output += "\n"
 output += 
 `    \\end{tabular}
-    \\caption{Drift detection performance on the real world dataset Elect2, measured in False Positive Rate and Accuracy ($FPR_{rw}$, $Acc$). Both SyncStream methods use a fixed reference, and SCD is run in only one direction.}
+    \\caption{Drift detection performance on the Elect2 dataset, measured in False Positive Rate and Accuracy ($FPR_{rw}$, $Acc$).}
     \\label{tab:results_real_world_airlines_elect2}
 \\end{table}`
 
@@ -336,7 +352,7 @@ for (const key of Object.keys(tableStructure).sort(sortFn)) {
 output += "\n"
 output += 
 `    \\end{tabular}
-    \\caption{Drift detection performance on the real world dataset Weather, measured in False Positive Rate and Accuracy ($FPR_{rw}$, $Acc$). Monthly and yearly batching was used for the test data. Both SyncStream methods use a fixed reference, and SCD is run in only one direction.}
+    \\caption{Drift detection performance on the Weather dataset, measured in False Positive Rate and Accuracy ($FPR_{rw}$, $Acc$). Monthly and yearly batching was used for the test data.}
     \\label{tab:results_real_world_weather}
 \\end{table}`
 
@@ -361,7 +377,7 @@ for (const key of Object.keys(tableStructure).sort(sortFn)) {
 output += "\n"
 output += 
 `    \\end{tabular}
-    \\caption{Drift detection performance on the real world dataset Spam, measured in False Positive Rate and Accuracy ($FPR_{rw}$, $Acc$). Batch sizes of 100, 50, and 20 were used for the test data. Both SyncStream methods use a fixed reference.}
+    \\caption{Drift detection performance on the Spam dataset, measured in False Positive Rate and Accuracy ($FPR_{rw}$, $Acc$). Batch sizes of 100, 50, and 20 were used for the test data.}
     \\label{tab:results_real_world_spam}
 \\end{table}`
 
