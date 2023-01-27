@@ -87,6 +87,9 @@ function parseFile(filename) {
       case "None":
         encoder = "te"
         break;
+      // case "None":
+      //   encoder = ""
+      //   break;
       default:
         break;
     }
