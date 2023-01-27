@@ -37,7 +37,7 @@ function parseFile(filename) {
         dataset = "weather_monthly"
       }
     } else if (resultLines[i].filename.includes("spam")) {
-      dataset = "spam"
+      dataset = `spam${resultLines[i].filename.trim().split(" ")[1]}`
     } else if (resultLines[i].filename.includes("electricity")) {
       dataset = "elect2"
     }
@@ -97,9 +97,11 @@ function parseFile(filename) {
           tableStructure[line] = {
             airlines: {},
             elect2: {},
-            spam: {},
             weather_yearly: {},
-            weather_monthly: {}
+            weather_monthly: {},
+            spam100: {},
+            spam50: {},
+            spam20: {},
           }
         }
         tableStructure[line][dataset] = computePerformance(dataset, detectorResult.split("[")[1].split("]")[0].split(","))
@@ -198,6 +200,9 @@ function computePerformance(dataset, detectedDrifts) {
     elect2: { nBatches: 83, realDrifts: getRealDriftsFromCsv("elect2") },
     weather_monthly: { nBatches: 403, realDrifts: getRealDriftsFromCsv("weather_monthly") },
     weather_yearly: { nBatches: 33, realDrifts: getRealDriftsFromCsv("weather_yearly") },
+    spam100: { nBatches: 30, realDrifts: [3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29] },
+    spam50: { nBatches: 59, realDrifts: [1, 3, 4, 5, 7, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58] },
+    spam20: { nBatches: 147, realDrifts: [2, 10, 11, 14, 17, 21, 22, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 39, 41, 42, 46, 47, 48, 49, 50, 51, 52, 53, 54, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 67, 68, 70, 72, 73, 74, 76, 77, 78, 79, 80, 82, 83, 85, 86, 87, 88, 90, 92, 93, 95, 97, 98, 99, 102, 103, 104, 105, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145] },
   }
 
   const drifts = detectedDrifts
@@ -258,6 +263,7 @@ function printLine(key, prevKey, datasets) {
 parseFile("./data/airlines_syncstream.txt")
 parseFile("./data/elect2.txt")
 parseFile("./data/weather.txt")
+parseFile("./data/spam_syncstream.txt")
 
 let output = 
 `\\begin{table}
@@ -344,21 +350,18 @@ output +=
         \\hline
         \\hline`
 previousKey = ""
+datasets = ["spam100", "spam50", "spam20"]
 for (const key of Object.keys(tableStructure).sort(sortFn)) {
-  if (previousKey.substring(0, 3) !== key.substring(0, 3)) {
-    output += "\n        \\hline"
+  const line = printLine(key, previousKey, datasets)
+  output += line
+  if (line) {
+    previousKey = key
   }
-  output += `\n        ${key}`
-  output += ` & (${new Number(tableStructure[key].spam.fpr).toPrecision(2)}, ${new Number(tableStructure[key].spam.acc).toPrecision(2)})` // 100
-  output += ` & (${new Number(tableStructure[key].spam.fpr).toPrecision(2)}, ${new Number(tableStructure[key].spam.acc).toPrecision(2)})` // 50
-  output += ` & (${new Number(tableStructure[key].spam.fpr).toPrecision(2)}, ${new Number(tableStructure[key].spam.acc).toPrecision(2)}) \\\\` // 20
-  output += "\n        \\hline"
-  previousKey = key
 }
 output += "\n"
 output += 
 `    \\end{tabular}
-    \\caption{Drift detection performance on the real world dataset Spam, measured in False Positive Rate and Accuracy ($FPR_{rw}$, $Acc$). Batch sizes of 100, 50, and 20 were used for the test data. Both SyncStream methods use a fixed reference, and SCD is run in only one direction.}
+    \\caption{Drift detection performance on the real world dataset Spam, measured in False Positive Rate and Accuracy ($FPR_{rw}$, $Acc$). Batch sizes of 100, 50, and 20 were used for the test data. Both SyncStream methods use a fixed reference.}
     \\label{tab:results_real_world_spam}
 \\end{table}`
 

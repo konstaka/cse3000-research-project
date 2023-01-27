@@ -204,7 +204,7 @@ Object.keys(tableStructure)
     output += "\n"
     output += 
 `    \\end{tabular}
-    \\caption{${tableStructure[driftType].caption} drift detection performance in synthetic datasets, measured in False Positive Rate and Latency ($FPR_s$, $L$).}
+    \\caption{${tableStructure[driftType].caption} drift detection performance in synthetic datasets, measured in False Positive Rate and Latency ($FPR_s$, $L$). Different encoders are marked as (oe, ohe, te), and experiments without the MinMaxScaler are marked with (u).}
     \\label{tab:results_synthetic_${driftType}}
 \\end{table}`
   })
