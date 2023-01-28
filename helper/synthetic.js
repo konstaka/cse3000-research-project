@@ -206,7 +206,7 @@ Object.keys(tableStructure)
     output += "\n"
     output += 
 `    \\end{tabular}
-    \\caption{${tableStructure[driftType].caption} drift detection performance in synthetic datasets, measured in False Positive Rate and Latency ($FPR_s$, $L$).}
+    \\caption{${tableStructure[driftType].caption} drift detection performance on the synthetic datasets, measured in False Positive Rate and Latency ($FPR_s$, $L$).}
     \\label{tab:results_synthetic_${driftType}}
 \\end{table}`
   })

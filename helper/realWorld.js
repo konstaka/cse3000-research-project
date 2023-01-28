@@ -108,7 +108,16 @@ function parseFile(filename) {
             spam20: {},
           }
         }
-        tableStructure[line][dataset] = computePerformance(dataset, detectorResult.split("[")[1].split("]")[0].split(","))
+        if (detector === "SCD (unidir." && dataset.includes("weather")) {
+          if (!tableStructure[line][dataset].fpr) {
+            tableStructure[line][dataset] = { fpr: [], acc: [] }
+          }
+          const { fpr, acc } = computePerformance(dataset, detectorResult.split("[")[1].split("]")[0].split(","))
+          tableStructure[line][dataset].fpr.push(fpr)
+          tableStructure[line][dataset].acc.push(acc)
+        } else {
+          tableStructure[line][dataset] = computePerformance(dataset, detectorResult.split("[")[1].split("]")[0].split(","))
+        }
       }
     }
   }
@@ -205,6 +214,10 @@ function getRealDriftsFromCsv(dataset) {
   return realDrifts
 }
 
+// console.log(JSON.stringify(getRealDriftsFromCsv("weather_monthly")));
+// console.log(getRealDriftsFromCsv("weather_yearly"));
+// process.exit(0)
+
 // Compute performance metrics here so detectors don't need to be run again if the reference changes.
 function computePerformance(dataset, detectedDrifts) {
   const reference = {
@@ -249,7 +262,7 @@ function printLine(key, prevKey, datasets) {
   }
   let line = ""
   if (!emptyLine) {
-    if (prevKey.substring(0, 4) !== key.substring(0, 4)) {
+    if (prevKey.substring(0, 6) !== key.substring(0, 6)) {
       line += "\n        \\hline"
     }
     line += `\n        ${key}`
@@ -274,12 +287,47 @@ function printLine(key, prevKey, datasets) {
 // Construct the LaTeX tables
 parseFile("./data/airlines_syncstream.txt")
 parseFile("./data/elect2.txt")
-parseFile("./data/weather.txt")
+parseFile("./data/weather_syncstream.txt")
+parseFile("./data/weather_scd_unidir/1.txt")
+parseFile("./data/weather_scd_unidir/2.txt")
+parseFile("./data/weather_scd_unidir/3.txt")
+parseFile("./data/weather_scd_unidir/4.txt")
+parseFile("./data/weather_scd_unidir/5.txt")
+parseFile("./data/weather_scd_unidir/6.txt")
+parseFile("./data/weather_scd_unidir/7.txt")
+parseFile("./data/weather_scd_unidir/8.txt")
+parseFile("./data/weather_scd_unidir/9.txt")
+parseFile("./data/weather_scd_unidir/10.txt")
+parseFile("./data/weather_monthly_scd_bidir.txt")
+parseFile("./data/weather_yearly_scd_bidir.txt")
 parseFile("./data/spam_syncstream.txt")
-parseFile("./data/weather_scd_bidir.txt")
-// console.log(tableStructure);
-// process.exit(0)
 
+// console.dir(tableStructure, { depth: null });
+
+// Average out the unidirectional SCD results on Weather
+for (const key of Object.keys(tableStructure)) {
+  if (key.startsWith("SCD (unidir.")) {
+    for (const dataset of Object.keys(tableStructure[key])) {
+      if (dataset.includes("weather")) {
+        let fprSum = 0
+        let accSum = 0
+        for (const fpr of tableStructure[key][dataset].fpr) {
+          fprSum += fpr
+        }
+        for (const acc of tableStructure[key][dataset].acc) {
+          accSum += acc
+        }
+        tableStructure[key][dataset] = { 
+          fpr: fprSum / tableStructure[key][dataset].fpr.length,
+          acc: accSum / tableStructure[key][dataset].acc.length
+        }
+      }
+    }
+  }
+}
+
+// console.dir(tableStructure, { depth: null });
+// process.exit(0)
 
 let output = 
 `\\begin{table}
@@ -302,7 +350,7 @@ output += "\n"
 output += 
 `    \\end{tabular}
     \\caption{Drift detection performance on the Airlines dataset, measured in False Positive Rate and Accuracy ($FPR_{rw}$, $Acc$).}
-    \\label{tab:results_real_world_airlines_elect2}
+    \\label{tab:results_real_world_airlines}
 \\end{table}`
 
 
@@ -328,7 +376,7 @@ output += "\n"
 output += 
 `    \\end{tabular}
     \\caption{Drift detection performance on the Elect2 dataset, measured in False Positive Rate and Accuracy ($FPR_{rw}$, $Acc$).}
-    \\label{tab:results_real_world_airlines_elect2}
+    \\label{tab:results_real_world_elect2}
 \\end{table}`
 
 output += "\n\n"
@@ -352,7 +400,7 @@ for (const key of Object.keys(tableStructure).sort(sortFn)) {
 output += "\n"
 output += 
 `    \\end{tabular}
-    \\caption{Drift detection performance on the Weather dataset, measured in False Positive Rate and Accuracy ($FPR_{rw}$, $Acc$). Monthly and yearly batching was used for the test data.}
+    \\caption{Drift detection performance on the Weather dataset, measured in False Positive Rate and Accuracy ($FPR_{rw}$, $Acc$). Monthly and yearly batching was used for the test data. Unidirectional SCD results are averages of 10 runs.}
     \\label{tab:results_real_world_weather}
 \\end{table}`
 
