@@ -1,6 +1,6 @@
 # Evaluating Data Distribution Based Concept Drift Detectors
 
-This repository is the code contribution of my BSc thesis, part of the [Research Project](https://github.com/TU-Delft-CSE/Research-Project) 2022-2023-2 of [TU Delft](https://https//github.com/TU-Delft-CSE).
+This repository is the code contribution of my BSc thesis, part of the [Research Project](https://github.com/TU-Delft-CSE/Research-Project) 2022-2023-2 of [TU Delft](https://github.com/TU-Delft-CSE).
 
 ## Structure
 
