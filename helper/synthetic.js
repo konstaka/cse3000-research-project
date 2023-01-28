@@ -168,6 +168,12 @@ function sortFn(a, b) {
   if (a.startsWith("Wilc") && b.startsWith("SCD")) {
     return -1
   }
+  if (a.includes("bidir") && b.includes("unidir")) {
+    return 1
+  }
+  if (a.includes("unidir") && b.includes("bidir")) {
+    return -1
+  }
   return a.localeCompare(b)
 }
 
@@ -175,9 +181,14 @@ function sortFn(a, b) {
 // Construct the LaTeX tables
 
 parseFile("./data/sea.txt")
-parseFile("./data/agraw1.txt")
-parseFile("./data/agraw2.txt")
+parseFile("./data/agraw1_syncstream.txt")
+parseFile("./data/agraw2_syncstream.txt")
 parseFile("./data/agraw_scd.txt")
+parseFile("./data/agraw_abrupt_scd_bidir.txt")
+parseFile("./data/agraw_gradual_scd_bidir.txt")
+
+// console.log(tableStructure);
+// process.exit(0)
 
 let output = ""
 
