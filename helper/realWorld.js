@@ -108,7 +108,7 @@ function parseFile(filename) {
             spam20: {},
           }
         }
-        if (detector === "SCD (unidir." && dataset.includes("weather")) {
+        if (detector === "SCD (unidir." && (dataset.includes("weather") || dataset.includes("spam"))) {
           if (!tableStructure[line][dataset].fpr) {
             tableStructure[line][dataset] = { fpr: [], acc: [] }
           }
@@ -304,15 +304,16 @@ parseFile("./data/weather_yearly_scd_bidir.txt")
 parseFile("./data/weather_bidir_pca.txt")
 parseFile("./data/spam_syncstream.txt")
 parseFile("./data/spam_scd_normal.txt")
+parseFile("./data/spam_scd_10x_inverted.txt")
 
 // console.dir(tableStructure, { depth: null });
 // process.exit(0)
 
-// Average out the unidirectional SCD results on Weather
+// Average out the unidirectional SCD results on Weather and Spam
 for (const key of Object.keys(tableStructure)) {
   if (key.startsWith("SCD (unidir.")) {
     for (const dataset of Object.keys(tableStructure[key])) {
-      if (dataset.includes("weather")) {
+      if (dataset.includes("weather") || dataset.includes("spam")) {
         let fprSum = 0
         let accSum = 0
         for (const fpr of tableStructure[key][dataset].fpr) {
@@ -404,7 +405,7 @@ for (const key of Object.keys(tableStructure).sort(sortFn)) {
 output += "\n"
 output += 
 `    \\end{tabular}
-    \\caption{Drift detection performance on the Weather dataset, measured in False Positive Rate and Accuracy ($FPR_{rw}$, $Acc$). Monthly and yearly batching was used for the test data. Unidirectional SCD results are averages of 10 runs. Bidirectional SCD uses PCA for preprocessing.}
+    \\caption{Drift detection performance on the Weather dataset, measured in False Positive Rate and Accuracy ($FPR_{rw}$, $Acc$). Monthly and yearly batching was used. Unidirectional SCD is averaged over 10 runs. Bidirectional SCD uses PCA for preprocessing.}
     \\label{tab:results_real_world_weather}
 \\end{table}`
 
@@ -429,7 +430,7 @@ for (const key of Object.keys(tableStructure).sort(sortFn)) {
 output += "\n"
 output += 
 `    \\end{tabular}
-    \\caption{Drift detection performance on the Spam dataset, measured in False Positive Rate and Accuracy ($FPR_{rw}$, $Acc$). Batch sizes of 100, 50, and 20 were used for the test data.}
+    \\caption{Drift detection performance on the Spam dataset, measured in False Positive Rate and Accuracy ($FPR_{rw}$, $Acc$). Batch sizes of 100, 50, and 20 were used. SCD uses PCA preprocessing with 100 components and inverted test statistic and is averaged over 10 runs.}
     \\label{tab:results_real_world_spam}
 \\end{table}`
 
