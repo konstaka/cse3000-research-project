@@ -1,12 +1,6 @@
 AGRAW SCD
 
-synthetic_data/abrupt_drift/agraw1_1_abrupt_drift_0_noise_balanced.arff encoder: onehot
-SCD_unidir: [] (0.0, 1.0)
 
-
-
- synthetic_data/abrupt_drift/agraw1_1_abrupt_drift_0_noise_balanced.arff encoder: onehot
-SCD_unidir: [] (0.0, 1.0)
 
 
                0    1     2              3     4              5    6     7  \
@@ -118,14 +112,6 @@ SCD_unidir: [7] (0.0, 1.0)
 
 
 
- synthetic_data/gradual_drift/agraw1_1_gradual_drift_0_noise_balanced_1.arff encoder: onehot
-SCD_unidir: [] (0.0, 1.0)
-
-
-
- synthetic_data/gradual_drift/agraw1_1_gradual_drift_0_noise_balanced_1.arff encoder: onehot
-SCD_unidir: [] (0.0, 1.0)
-
 
                0    1     2              3     4              5    6     7  \
 0   94052.603413  0.0  57.0  835277.540425  13.0  458161.406454  4.0  16.0   
@@ -236,13 +222,6 @@ SCD_unidir: [7] (0.0, 1.0)
 
 
 
- synthetic_data/gradual_drift/agraw1_1_gradual_drift_0_noise_balanced_5.arff encoder: onehot
-SCD_unidir: [] (0.0, 1.0)
-
-
-
- synthetic_data/gradual_drift/agraw1_1_gradual_drift_0_noise_balanced_5.arff encoder: onehot
-SCD_unidir: [] (0.0, 1.0)
 
 
                0    1     2              3     4              5    6     7  \
@@ -354,13 +333,6 @@ SCD_unidir: [7] (0.0, 1.0)
 
 
 
- synthetic_data/gradual_drift/agraw1_1_gradual_drift_0_noise_balanced_05.arff encoder: onehot
-SCD_unidir: [] (0.0, 1.0)
-
-
-
- synthetic_data/gradual_drift/agraw1_1_gradual_drift_0_noise_balanced_05.arff encoder: onehot
-SCD_unidir: [] (0.0, 1.0)
 
 
                0    1     2              3     4              5    6     7  \
@@ -472,13 +444,6 @@ SCD_unidir: [7] (0.0, 1.0)
 
 
 
- synthetic_data/gradual_drift/agraw1_1_gradual_drift_0_noise_balanced_10.arff encoder: onehot
-SCD_unidir: [] (0.0, 1.0)
-
-
-
- synthetic_data/gradual_drift/agraw1_1_gradual_drift_0_noise_balanced_10.arff encoder: onehot
-SCD_unidir: [] (0.0, 1.0)
 
 
                0    1     2              3     4              5    6     7  \
@@ -590,14 +555,6 @@ SCD_unidir: [] (0.0, 1.0)
 
 
 
- synthetic_data/gradual_drift/agraw1_1_gradual_drift_0_noise_balanced_20.arff encoder: onehot
-SCD_unidir: [] (0.0, 1.0)
-
-
-
- synthetic_data/gradual_drift/agraw1_1_gradual_drift_0_noise_balanced_20.arff encoder: onehot
-SCD_unidir: [] (0.0, 1.0)
-
 
                0             1     2              3     4              5    6  \
 0  131825.685683      0.000000  53.0  487669.207425  22.0   93353.454837  1.0   
@@ -707,14 +664,6 @@ scd_all took 506.5423541069031 seconds
 SCD_unidir: [] (0.0, 1.0)
 
 
-
- synthetic_data/abrupt_drift/agraw2_1_abrupt_drift_0_noise_balanced.arff encoder: onehot
-SCD_unidir: [] (0.0, 1.0)
-
-
-
- synthetic_data/abrupt_drift/agraw2_1_abrupt_drift_0_noise_balanced.arff encoder: onehot
-SCD_unidir: [] (0.0, 1.0)
 
 
                0             1     2             3     4              5    6  \
@@ -826,13 +775,6 @@ SCD_unidir: [] (0.0, 1.0)
 
 
 
- synthetic_data/gradual_drift/agraw2_1_gradual_drift_0_noise_balanced_1.arff encoder: onehot
-SCD_unidir: [] (0.0, 1.0)
-
-
-
- synthetic_data/gradual_drift/agraw2_1_gradual_drift_0_noise_balanced_1.arff encoder: onehot
-SCD_unidir: [] (0.0, 1.0)
 
 
                0             1     2             3     4              5    6  \
@@ -944,14 +886,6 @@ SCD_unidir: [] (0.0, 1.0)
 
 
 
- synthetic_data/gradual_drift/agraw2_1_gradual_drift_0_noise_balanced_5.arff encoder: onehot
-SCD_unidir: [] (0.0, 1.0)
-
-
-
- synthetic_data/gradual_drift/agraw2_1_gradual_drift_0_noise_balanced_5.arff encoder: onehot
-SCD_unidir: [] (0.0, 1.0)
-
 
                0             1     2             3     4              5    6  \
 0  144588.453529      0.000000  79.0  4.100626e+05  16.0  400132.283591  1.0   
@@ -1060,15 +994,6 @@ scd_all took 507.47378373146057 seconds
  synthetic_data/gradual_drift/agraw2_1_gradual_drift_0_noise_balanced_5.arff encoder: target
 SCD_unidir: [] (0.0, 1.0)
 
-
-
- synthetic_data/gradual_drift/agraw2_1_gradual_drift_0_noise_balanced_05.arff encoder: onehot
-SCD_unidir: [] (0.0, 1.0)
-
-
-
- synthetic_data/gradual_drift/agraw2_1_gradual_drift_0_noise_balanced_05.arff encoder: onehot
-SCD_unidir: [] (0.0, 1.0)
 
 
                0             1     2             3     4              5    6  \
@@ -1180,13 +1105,6 @@ SCD_unidir: [] (0.0, 1.0)
 
 
 
- synthetic_data/gradual_drift/agraw2_1_gradual_drift_0_noise_balanced_10.arff encoder: onehot
-SCD_unidir: [] (0.0, 1.0)
-
-
-
- synthetic_data/gradual_drift/agraw2_1_gradual_drift_0_noise_balanced_10.arff encoder: onehot
-SCD_unidir: [] (0.0, 1.0)
 
 
                0             1     2             3     4              5    6  \
@@ -1297,14 +1215,6 @@ scd_all took 629.2530248165131 seconds
 SCD_unidir: [] (0.0, 1.0)
 
 
-
- synthetic_data/gradual_drift/agraw2_1_gradual_drift_0_noise_balanced_20.arff encoder: onehot
-SCD_unidir: [] (0.0, 1.0)
-
-
-
- synthetic_data/gradual_drift/agraw2_1_gradual_drift_0_noise_balanced_20.arff encoder: onehot
-SCD_unidir: [] (0.0, 1.0)
 
 
                0             1     2             3     4              5    6  \

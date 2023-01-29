@@ -143,9 +143,9 @@ function parseFile(filename) {
 
 // Filter to leave out excess rows as specified
 function filter(detector, encoder, scaler, driftType) {
-  if (detector.includes("SCD") && encoder === "ohe") {
-    return false
-  }
+  // if (detector.includes("SCD") && encoder === "ohe") {
+  //   return false
+  // }
   if (driftType !== "abrupt") {
     if (scaler.includes("u") && (!detector.includes("PCA") || encoder !== "ohe")) {
       return false
@@ -186,6 +186,7 @@ parseFile("./data/agraw2_syncstream.txt")
 parseFile("./data/agraw_scd.txt")
 parseFile("./data/agraw_abrupt_scd_bidir.txt")
 parseFile("./data/agraw_gradual_scd_bidir.txt")
+parseFile("./data/agraw_abrupt_scd_onehot_pca.txt")
 
 // console.log(tableStructure);
 // process.exit(0)
