@@ -216,6 +216,7 @@ function getRealDriftsFromCsv(dataset) {
 
 // console.log(JSON.stringify(getRealDriftsFromCsv("weather_monthly")));
 // console.log(getRealDriftsFromCsv("weather_yearly"));
+// console.log(JSON.stringify(getRealDriftsFromCsv("elect2")));
 // process.exit(0)
 
 // Compute performance metrics here so detectors don't need to be run again if the reference changes.
@@ -300,9 +301,12 @@ parseFile("./data/weather_scd_unidir/9.txt")
 parseFile("./data/weather_scd_unidir/10.txt")
 parseFile("./data/weather_monthly_scd_bidir.txt")
 parseFile("./data/weather_yearly_scd_bidir.txt")
+parseFile("./data/weather_bidir_pca.txt")
 parseFile("./data/spam_syncstream.txt")
+parseFile("./data/spam_scd_normal.txt")
 
 // console.dir(tableStructure, { depth: null });
+// process.exit(0)
 
 // Average out the unidirectional SCD results on Weather
 for (const key of Object.keys(tableStructure)) {
@@ -375,7 +379,7 @@ for (const key of Object.keys(tableStructure).sort(sortFn)) {
 output += "\n"
 output += 
 `    \\end{tabular}
-    \\caption{Drift detection performance on the Elect2 dataset, measured in False Positive Rate and Accuracy ($FPR_{rw}$, $Acc$).}
+    \\caption{Drift detection performance on the Elect2 dataset, measured in False Positive Rate and Accuracy ($FPR_{rw}$, $Acc$). SCD uses PCA for preprocessing.}
     \\label{tab:results_real_world_elect2}
 \\end{table}`
 
@@ -400,7 +404,7 @@ for (const key of Object.keys(tableStructure).sort(sortFn)) {
 output += "\n"
 output += 
 `    \\end{tabular}
-    \\caption{Drift detection performance on the Weather dataset, measured in False Positive Rate and Accuracy ($FPR_{rw}$, $Acc$). Monthly and yearly batching was used for the test data. Unidirectional SCD results are averages of 10 runs.}
+    \\caption{Drift detection performance on the Weather dataset, measured in False Positive Rate and Accuracy ($FPR_{rw}$, $Acc$). Monthly and yearly batching was used for the test data. Unidirectional SCD results are averages of 10 runs. Bidirectional SCD uses PCA for preprocessing.}
     \\label{tab:results_real_world_weather}
 \\end{table}`
 
